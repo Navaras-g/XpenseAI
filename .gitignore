@@ -1,0 +1,60 @@
+# === Python & Environments ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.toast
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# === Data & Machine Learning Artifacts ===
+# Ignore raw financial data and trained model binaries
+data/*.csv
+data/*.xlsx
+models/*.joblib
+models/*.pkl
+models/*.h5
+.ipynb_checkpoints/
+
+# === Environment Variables & Secrets ===
+# Never commit your database credentials or API keys
+.env
+.env.*
+!.env.example
+
+# === Database (PostgreSQL / Local Volumes) ===
+# If you persist your Postgres container data locally
+.postgres_data/
+*.sql
+*.sqlite
+
+# === IDEs & Text Editors ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*~
+
+# === OS Generated Files ===
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+
+# === Frontend & Dashboards ===
+# Streamlit specific configuration/runtime caches if necessary
+.streamlit/config.toml
+.streamlit/secrets.toml
+
+spec.md
