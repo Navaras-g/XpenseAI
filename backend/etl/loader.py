@@ -6,15 +6,9 @@ import pandas as pd
 
 
 def load(df: pd.DataFrame, user_id: str, db: Session) -> dict:
-    """
-    Insert cleaned transaction rows into the database.
-    Skips rows whose raw_hash already exists (cross-upload deduplication).
-    Returns a summary dict: {inserted, skipped_duplicates}
-    """
     if df.empty:
         return {"inserted": 0, "skipped_duplicates": 0}
 
-    # Fetch all existing hashes for this user in one query
     existing_hashes = set(
         row[0] for row in
         db.query(Transaction.raw_hash)
@@ -39,35 +33,45 @@ def load(df: pd.DataFrame, user_id: str, db: Session) -> dict:
             description=row["description"],
             amount=float(row["amount"]),
             transaction_type=row["transaction_type"],
-            category_id=None,   # set by categorizer after insert
+            category_id=None,
             is_user_corrected=False,
             raw_hash=row["raw_hash"],
         )
         new_transactions.append(txn)
-        existing_hashes.add(row["raw_hash"])  # prevent dupes within the same batch
+        existing_hashes.add(row["raw_hash"])
         inserted += 1
 
     if new_transactions:
         db.bulk_save_objects(new_transactions)
         db.commit()
 
+        # ── Auto-categorize new transactions ────────────────────────
+        try:
+            from backend.services.categorizer import load_active_model, predict_batch
+            pipeline = load_active_model(db)
+            if pipeline:
+                # Reload from DB to get ORM objects with IDs attached
+                hashes = [t.raw_hash for t in new_transactions]
+                txn_objects = (
+                    db.query(Transaction)
+                    .filter(Transaction.raw_hash.in_(hashes))
+                    .all()
+                )
+                predict_batch(txn_objects, pipeline, db)
+                db.commit()
+        except Exception as e:
+            # Categorization failure should never block an upload
+            print(f"[categorizer] Warning: auto-categorization failed: {e}")
+
     return {"inserted": inserted, "skipped_duplicates": skipped_duplicates}
 
 
 def update_monthly_summaries(user_id: str, db: Session) -> None:
-    """
-    Recompute monthly_summaries for all months that have transactions for this user.
-    Called after every ETL load.
-    """
     rows = (
-        db.query(
-            Transaction.date,
-            Transaction.amount,
-        )
+        db.query(Transaction.date, Transaction.amount)
         .filter(Transaction.user_id == user_id)
         .all()
     )
-
     if not rows:
         return
 
@@ -80,7 +84,6 @@ def update_monthly_summaries(user_id: str, db: Session) -> None:
         expenses = float(group[group["amount"] < 0]["amount"].abs().sum())
         savings = income - expenses
 
-        # Upsert — update if exists, insert if not
         existing = (
             db.query(MonthlySummary)
             .filter(
@@ -101,5 +104,4 @@ def update_monthly_summaries(user_id: str, db: Session) -> None:
                 expenses=expenses,
                 savings=savings,
             ))
-
     db.commit()

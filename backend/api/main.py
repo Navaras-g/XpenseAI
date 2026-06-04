@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.auth.router import router as auth_router
 from backend.api.routers.upload import router as upload_router
+from backend.api.routers.ml import router as ml_router
 
 app = FastAPI(
     title="Expense Intelligence Platform",
@@ -22,6 +23,7 @@ app.add_middleware(
 # Routers
 app.include_router(auth_router)
 app.include_router(upload_router) 
+app.include_router(ml_router)
 
 @app.get("/", tags=["health"])
 def root():
