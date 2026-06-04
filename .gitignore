@@ -55,6 +55,6 @@ Thumbs.db
 # === Frontend & Dashboards ===
 # Streamlit specific configuration/runtime caches if necessary
 .streamlit/config.toml
-.streamlit/secrets.toml
+.streamlit/secrets.toml*
 
-spec.md
+projectspec.md
