@@ -1,7 +1,6 @@
 import uuid
 from sqlalchemy.orm import Session
 from backend.database.models import Transaction, MonthlySummary
-from backend.database.connection import SessionLocal
 import pandas as pd
 
 
@@ -45,23 +44,35 @@ def load(df: pd.DataFrame, user_id: str, db: Session) -> dict:
         db.bulk_save_objects(new_transactions)
         db.commit()
 
-        # ── Auto-categorize new transactions ────────────────────────
+        # Reload from DB to get ORM objects with IDs attached
+        hashes = [t.raw_hash for t in new_transactions]
+        txn_objects = (
+            db.query(Transaction)
+            .filter(Transaction.raw_hash.in_(hashes))
+            .all()
+        )
+
+        # ── Auto-categorize ─────────────────────────────────────────
         try:
             from backend.services.categorizer import load_active_model, predict_batch
             pipeline = load_active_model(db)
             if pipeline:
-                # Reload from DB to get ORM objects with IDs attached
-                hashes = [t.raw_hash for t in new_transactions]
-                txn_objects = (
-                    db.query(Transaction)
-                    .filter(Transaction.raw_hash.in_(hashes))
-                    .all()
-                )
                 predict_batch(txn_objects, pipeline, db)
                 db.commit()
         except Exception as e:
-            # Categorization failure should never block an upload
             print(f"[categorizer] Warning: auto-categorization failed: {e}")
+
+        # ── Auto anomaly score ───────────────────────────────────────
+        try:
+            from backend.services.anomaly_detector import load_active_model as load_anomaly, score_batch
+            artifact = load_anomaly(db)
+            if artifact:
+                score_batch(txn_objects, artifact, db)
+                db.commit()
+            else:
+                print("[anomaly] No active model yet — skipping scoring.")
+        except Exception as e:
+            print(f"[anomaly] Warning: anomaly scoring failed: {e}")
 
     return {"inserted": inserted, "skipped_duplicates": skipped_duplicates}
 
