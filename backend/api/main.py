@@ -5,6 +5,7 @@ from backend.api.auth.router import router as auth_router
 from backend.api.routers.upload import router as upload_router
 from backend.api.routers.ml import router as ml_router
 from backend.api.routers.subscriptions import router as subscriptions_router
+from backend.api.routers.insights import router as insights_router
 
 app = FastAPI(
     title="Expense Intelligence Platform",
@@ -26,6 +27,7 @@ app.include_router(auth_router)
 app.include_router(upload_router) 
 app.include_router(ml_router)
 app.include_router(subscriptions_router)
+app.include_router(insights_router)
 
 @app.get("/", tags=["health"])
 def root():
