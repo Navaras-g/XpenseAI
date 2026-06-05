@@ -7,6 +7,7 @@ from backend.api.dependencies import get_current_user
 from backend.etl.extractor import extract, InvalidCSVError
 from backend.etl.transformer import transform
 from backend.etl import loader
+from backend.services.subscription_detector import detect
 
 router = APIRouter(prefix="/upload-transactions", tags=["upload"])
 
@@ -40,6 +41,10 @@ def upload_transactions(
 
     # Update monthly summaries
     loader.update_monthly_summaries(str(current_user.user_id), db)
+
+
+    # Detect subscriptions
+    detect(str(current_user.user_id), db)
 
     return {
         "success": True,
