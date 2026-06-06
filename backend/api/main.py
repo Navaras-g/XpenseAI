@@ -3,10 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.auth.router import router as auth_router
 from backend.api.routers.upload import router as upload_router
-from backend.api.routers.ml import router as ml_router
+from backend.api.routers.transactions import router as transactions_router
+from backend.api.routers.anomalies import router as anomalies_router
 from backend.api.routers.subscriptions import router as subscriptions_router
-from backend.api.routers.insights import router as insights_router
 from backend.api.routers.dashboard import router as dashboard_router
+from backend.api.routers.insights import router as insights_router
+from backend.api.routers.forecast import router as forecast_router
+from backend.api.routers.ml import router as ml_router
 
 app = FastAPI(
     title="Expense Intelligence Platform",
@@ -14,7 +17,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow Streamlit (port 8501) to talk to FastAPI (port 8000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8501"],
@@ -23,13 +25,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
 app.include_router(auth_router)
-app.include_router(upload_router) 
-app.include_router(ml_router)
+app.include_router(upload_router)
+app.include_router(transactions_router)
+app.include_router(anomalies_router)
 app.include_router(subscriptions_router)
-app.include_router(insights_router)
 app.include_router(dashboard_router)
+app.include_router(insights_router)
+app.include_router(forecast_router)
+app.include_router(ml_router)
+
 
 @app.get("/", tags=["health"])
 def root():
