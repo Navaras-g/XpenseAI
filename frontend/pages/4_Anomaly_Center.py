@@ -53,7 +53,7 @@ st.divider()
 st.subheader("Amount Distribution")
 st.caption("Anomalous transactions vs normal spending range")
 
-all_txns = api_get("/transactions", params={"limit": 500})
+all_txns = api_get("/transactions", params={"limit": 200})
 if all_txns and all_txns.get("data"):
     all_df = pd.DataFrame(all_txns["data"])
     all_df["amount_abs"] = all_df["amount"].abs()

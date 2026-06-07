@@ -10,7 +10,7 @@ require_auth()
 st.title("📂 Category Analytics")
 
 # ── Fetch all transactions ───────────────────────────────────────────
-result = api_get("/transactions", params={"limit": 500})
+result = api_get("/transactions", params={"limit": 200})
 
 if not result or not result.get("data"):
     st.info("No transaction data available. Upload a CSV first.")
