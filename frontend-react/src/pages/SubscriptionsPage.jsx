@@ -76,25 +76,49 @@ export default function SubscriptionsPage() {
                         {active.length === 0 ? (
                             <p className="text-slate-500 text-sm">No active subscriptions.</p>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                                     <thead>
-                                        <tr className="border-b border-slate-700">
+                                        <tr style={{ borderBottom: '1px solid var(--border)' }}>
                                             {['Merchant', 'Amount', 'Frequency', 'Last Charged', 'Next Expected'].map(h => (
-                                                <th key={h} className="text-left text-slate-400 font-medium pb-3 pr-4">{h}</th>
+                                                <th key={h} style={{
+                                                    textAlign: 'left',
+                                                    color: 'var(--text-muted)',
+                                                    fontWeight: 500,
+                                                    fontSize: '0.72rem',
+                                                    letterSpacing: '0.07em',
+                                                    textTransform: 'uppercase',
+                                                    padding: '0 1rem 1rem 0',
+                                                }}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-700/50">
+                                    <tbody>
                                         {active.map(s => (
-                                            <tr key={s.subscription_id} className="hover:bg-slate-700/30">
-                                                <td className="py-3 pr-4 text-slate-200 font-medium">{s.merchant}</td>
-                                                <td className="py-3 pr-4 text-red-400">{formatNPR(s.amount)}</td>
-                                                <td className="py-3 pr-4">
+                                            <tr
+                                                key={s.subscription_id}
+                                                style={{
+                                                    borderBottom: '1px solid var(--border)',
+                                                    transition: 'background 0.15s',
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-primary)', fontWeight: 500 }}>
+                                                    {s.merchant}
+                                                </td>
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: '#ff4f6a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                    {formatNPR(s.amount)}
+                                                </td>
+                                                <td style={{ padding: '1rem 1rem 1rem 0' }}>
                                                     <Badge variant="info">{s.frequency}</Badge>
                                                 </td>
-                                                <td className="py-3 pr-4 text-slate-400">{s.last_seen_date}</td>
-                                                <td className="py-3 text-slate-400">{s.next_expected_date}</td>
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)' }}>
+                                                    {s.last_seen_date}
+                                                </td>
+                                                <td style={{ padding: '1rem 0', color: 'var(--text-muted)' }}>
+                                                    {s.next_expected_date}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -107,22 +131,47 @@ export default function SubscriptionsPage() {
                     {inactive.length > 0 && (
                         <Card>
                             <CardTitle>Inactive / Cancelled ({inactive.length})</CardTitle>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                                     <thead>
-                                        <tr className="border-b border-slate-700">
+                                        <tr style={{ borderBottom: '1px solid var(--border)' }}>
                                             {['Merchant', 'Amount', 'Frequency', 'Last Seen'].map(h => (
-                                                <th key={h} className="text-left text-slate-400 font-medium pb-3 pr-4">{h}</th>
+                                                <th key={h} style={{
+                                                    textAlign: 'left',
+                                                    color: 'var(--text-muted)',
+                                                    fontWeight: 500,
+                                                    fontSize: '0.72rem',
+                                                    letterSpacing: '0.07em',
+                                                    textTransform: 'uppercase',
+                                                    padding: '0 1rem 1rem 0',
+                                                }}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-700/50">
+                                    <tbody>
                                         {inactive.map(s => (
-                                            <tr key={s.subscription_id} className="hover:bg-slate-700/30 opacity-60">
-                                                <td className="py-3 pr-4 text-slate-300">{s.merchant}</td>
-                                                <td className="py-3 pr-4 text-slate-400">{formatNPR(s.amount)}</td>
-                                                <td className="py-3 pr-4 text-slate-400">{s.frequency}</td>
-                                                <td className="py-3 text-slate-400">{s.last_seen_date}</td>
+                                            <tr
+                                                key={s.subscription_id}
+                                                style={{
+                                                    borderBottom: '1px solid var(--border)',
+                                                    transition: 'background 0.15s',
+                                                    opacity: 0.6
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)' }}>
+                                                    {s.merchant}
+                                                </td>
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                                    {formatNPR(s.amount)}
+                                                </td>
+                                                <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)' }}>
+                                                    {s.frequency}
+                                                </td>
+                                                <td style={{ padding: '1rem 0', color: 'var(--text-muted)' }}>
+                                                    {s.last_seen_date}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>

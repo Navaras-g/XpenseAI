@@ -1,9 +1,15 @@
-export function EmptyState({ icon = '📭', title, message }) {
+import { motion } from 'framer-motion'
+
+export function EmptyState({ icon, title, message }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-            <span className="text-5xl">{icon}</span>
-            <h3 className="text-slate-300 font-semibold text-lg">{title}</h3>
-            {message && <p className="text-slate-500 text-sm max-w-sm">{message}</p>}
-        </div>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', gap: '1rem', textAlign: 'center' }}
+        >
+            {icon && <div style={{ fontSize: '3rem', opacity: 0.3 }}>{icon}</div>}
+            <h3 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 600 }}>{title}</h3>
+            {message && <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '24rem' }}>{message}</p>}
+        </motion.div>
     )
 }

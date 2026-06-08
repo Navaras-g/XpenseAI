@@ -46,28 +46,52 @@ export default function AnomaliesPage() {
             {/* Table */}
             <Card>
                 <CardTitle>Flagged Transactions</CardTitle>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                         <thead>
-                            <tr className="border-b border-slate-700">
+                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
                                 {['Date', 'Merchant', 'Amount', 'Score', 'Reason'].map(h => (
-                                    <th key={h} className="text-left text-slate-400 font-medium pb-3 pr-4">{h}</th>
+                                    <th key={h} style={{
+                                        textAlign: 'left',
+                                        color: 'var(--text-muted)',
+                                        fontWeight: 500,
+                                        fontSize: '0.72rem',
+                                        letterSpacing: '0.07em',
+                                        textTransform: 'uppercase',
+                                        padding: '0 1rem 1rem 0',
+                                    }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-700/50">
+                        <tbody>
                             {anomalies.map((a) => (
-                                <tr key={a.anomaly_id} className="hover:bg-slate-700/30">
-                                    <td className="py-3 pr-4 text-slate-400">{a.date}</td>
-                                    <td className="py-3 pr-4 text-slate-200 font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                                <tr
+                                    key={a.anomaly_id}
+                                    style={{
+                                        borderBottom: '1px solid var(--border)',
+                                        transition: 'background 0.15s',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                        {a.date}
+                                    </td>
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-primary)', fontWeight: 500 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <AlertTriangle size={14} style={{ color: '#ff4f6a', flexShrink: 0 }} />
                                             {a.merchant}
                                         </div>
                                     </td>
-                                    <td className="py-3 pr-4 text-red-400 font-medium">{formatNPR(a.amount)}</td>
-                                    <td className="py-3 pr-4 text-slate-400 font-mono text-xs">{a.anomaly_score}</td>
-                                    <td className="py-3 text-slate-400 text-xs max-w-xs">{a.reason}</td>
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: '#ff4f6a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                        {formatNPR(a.amount)}
+                                    </td>
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                                        {a.anomaly_score}
+                                    </td>
+                                    <td style={{ padding: '1rem 0', color: 'var(--text-muted)', fontSize: '0.75rem', maxWidth: '16rem' }}>
+                                        {a.reason}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

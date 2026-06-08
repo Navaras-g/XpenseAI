@@ -33,7 +33,7 @@ export default function OverviewPage() {
     if (loading) return <LoadingSpinner text="Loading overview..." />
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-white">Overview</h1>
@@ -49,7 +49,7 @@ export default function OverviewPage() {
             ) : (
                 <>
                     {/* KPI row */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                         <Metric
                             label="Income"
                             value={formatNPR(summary.income)}
@@ -78,54 +78,57 @@ export default function OverviewPage() {
                     </div>
 
                     {/* Charts + Health */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                         {/* Category bar chart */}
-                        <Card>
-                            <CardTitle>Spending by Category</CardTitle>
-                            {summary.top_categories?.length > 0 ? (
-                                <ResponsiveContainer width="100%" height={240}>
-                                    <BarChart data={summary.top_categories} margin={{ top: 0, right: 0, left: 10, bottom: 60 }}>
-                                        <XAxis
-                                            dataKey="category"
-                                            tick={{ fill: '#94a3b8', fontSize: 11 }}
-                                            angle={-35}
-                                            textAnchor="end"
-                                        />
-                                        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                                        <Tooltip
-                                            contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                                            labelStyle={{ color: '#f1f5f9' }}
-                                            formatter={(v) => [formatNPR(v), 'Spent']}
-                                        />
-                                        <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                                            {summary.top_categories.map((_, i) => (
-                                                <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            ) : (
-                                <p className="text-slate-500 text-sm">No category data.</p>
-                            )}
+                        <Card className="flex flex-col justify-between">
+                            <div>
+                                <CardTitle>Spending by Category</CardTitle>
+                                {summary.top_categories?.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={320}>
+                                        <BarChart data={summary.top_categories} margin={{ top: 15, right: 10, left: 10, bottom: 65 }}>
+                                            <XAxis
+                                                dataKey="category"
+                                                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                                                angle={-35}
+                                                textAnchor="end"
+                                                interval={0}
+                                            />
+                                            <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                            <Tooltip
+                                                contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
+                                                labelStyle={{ color: '#f1f5f9' }}
+                                                formatter={(v) => [formatNPR(v), 'Spent']}
+                                            />
+                                            <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                                                {summary.top_categories.map((_, i) => (
+                                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <p className="text-slate-500 text-sm py-10">No category data.</p>
+                                )}
+                            </div>
                         </Card>
 
                         {/* Health breakdown */}
                         <Card>
                             <CardTitle>Health Score Breakdown</CardTitle>
-                            <div className="space-y-4">
+                            <div className="space-y-6 py-2">
                                 {Object.entries(summary.health_components || {}).map(([key, val]) => {
                                     const pct = Math.round((val.score / val.max) * 100)
                                     const color = pct >= 70 ? 'bg-green-500' : pct >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                                     return (
-                                        <div key={key}>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-slate-300 capitalize">{key.replace(/_/g, ' ')}</span>
-                                                <span className="text-slate-400">{val.score}/{val.max}</span>
+                                        <div key={key} className="space-y-1.5">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-200 font-medium capitalize">{key.replace(/_/g, ' ')}</span>
+                                                <span className="text-slate-400 font-mono">{val.score}/{val.max}</span>
                                             </div>
-                                            <div className="w-full bg-slate-700 rounded-full h-2">
-                                                <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                                            <div className="w-full bg-slate-700/60 rounded-full h-2.5">
+                                                <div className={`${color} h-2.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
                                             </div>
-                                            <p className="text-slate-500 text-xs mt-1">{val.detail}</p>
+                                            <p className="text-slate-400 text-xs leading-relaxed">{val.detail}</p>
                                         </div>
                                     )
                                 })}
@@ -137,13 +140,18 @@ export default function OverviewPage() {
                     <Card>
                         <CardTitle>💡 Insights</CardTitle>
                         {insights.length === 0 ? (
-                            <p className="text-slate-500 text-sm">No insights for this month.</p>
+                            <p className="text-slate-500 text-sm py-2">No insights for this month.</p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-4 mt-2">
                                 {insights.slice(0, 6).map((ins, i) => (
-                                    <div key={i} className="flex items-start gap-3 p-3 bg-slate-700/50 rounded-lg">
-                                        <Badge variant={ins.severity}>{ins.severity}</Badge>
-                                        <p className="text-slate-300 text-sm">{ins.message}</p>
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-4 p-4 bg-slate-700/30 border border-slate-700/40 rounded-xl hover:bg-slate-700/40 transition-colors"
+                                    >
+                                        <div className="shrink-0">
+                                            <Badge variant={ins.severity}>{ins.severity}</Badge>
+                                        </div>
+                                        <p className="text-slate-200 text-sm leading-relaxed font-medium">{ins.message}</p>
                                     </div>
                                 ))}
                             </div>
@@ -155,14 +163,14 @@ export default function OverviewPage() {
                         <Card>
                             <CardTitle>🚨 Anomalies</CardTitle>
                             {summary.anomaly_count > 0 ? (
-                                <p className="text-red-400">{summary.anomaly_count} anomalous transaction(s) detected.</p>
+                                <p className="text-red-400 font-medium">{summary.anomaly_count} anomalous transaction(s) detected.</p>
                             ) : (
-                                <p className="text-green-400">✓ No anomalies this month.</p>
+                                <p className="text-green-400 font-medium">✓ No anomalies this month.</p>
                             )}
                         </Card>
                         <Card>
                             <CardTitle>📋 Transactions</CardTitle>
-                            <p className="text-slate-300">{summary.transaction_count} transactions recorded.</p>
+                            <p className="text-slate-300 font-medium">{summary.transaction_count} transactions recorded.</p>
                         </Card>
                     </div>
                 </>

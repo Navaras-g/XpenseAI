@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { getTransactions, uploadCSV, updateCategory } from '../api/endpoints'
 import { Card, CardTitle } from '../components/ui/Card'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
-import { Badge } from '../components/ui/Badge'
 import { Upload, Check } from 'lucide-react'
 
 const formatNPR = (n) => `NPR ${Math.abs(Number(n)).toLocaleString()}`
@@ -77,33 +76,50 @@ export default function TransactionsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-white">Transactions</h1>
-                <div className="flex gap-3">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h1 style={{ color: 'var(--text-primary)', fontSize: '1.6rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
+                    Transactions
+                </h1>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <input
                         type="text"
                         placeholder="Search merchant..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="bg-slate-700 border border-slate-600 text-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        style={{
+                            background: 'var(--bg-elevated)',
+                            border: '1px solid var(--border-strong)',
+                            color: 'var(--text-primary)',
+                            borderRadius: 10, padding: '0.6rem 1rem',
+                            fontSize: '0.85rem', outline: 'none', width: 220,
+                        }}
                     />
                     <button
                         onClick={() => fileRef.current.click()}
                         disabled={uploading}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            padding: '0.6rem 1.25rem',
+                            background: 'linear-gradient(135deg, #4f7fff, #8b5cf6)',
+                            border: 'none', borderRadius: 10,
+                            color: 'white', fontWeight: 600, fontSize: '0.85rem',
+                            cursor: uploading ? 'not-allowed' : 'pointer',
+                            opacity: uploading ? 0.6 : 1,
+                            whiteSpace: 'nowrap',
+                        }}
                     >
-                        <Upload size={16} />
+                        <Upload size={15} />
                         {uploading ? 'Uploading...' : 'Upload CSV'}
                     </button>
-                    <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
+                    <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={handleUpload} />
                 </div>
             </div>
 
             {/* Upload result */}
             {uploadResult && (
                 <div className={`p-4 rounded-lg border text-sm ${uploadResult.success
-                        ? 'bg-green-500/20 border-green-500/30 text-green-400'
-                        : 'bg-red-500/20 border-red-500/30 text-red-400'
+                    ? 'bg-green-500/20 border-green-500/30 text-green-400'
+                    : 'bg-red-500/20 border-red-500/30 text-red-400'
                     }`}>
                     {uploadResult.success
                         ? `✓ Imported ${uploadResult.data?.inserted} transactions. Skipped ${uploadResult.data?.skipped_duplicates} duplicates.`
@@ -115,42 +131,78 @@ export default function TransactionsPage() {
                 </div>
             )}
 
-            {/* Table */}
+            {/* Table Card wrapper */}
             <Card>
                 <div className="flex items-center justify-between mb-4">
                     <CardTitle>All Transactions</CardTitle>
                     <span className="text-slate-500 text-sm">Showing {filtered.length} of {total}</span>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                         <thead>
-                            <tr className="border-b border-slate-700">
+                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
                                 {['Date', 'Merchant', 'Amount', 'Type', 'Category', 'Corrected'].map(h => (
-                                    <th key={h} className="text-left text-slate-400 font-medium pb-3 pr-4">{h}</th>
+                                    <th key={h} style={{
+                                        textAlign: 'left',
+                                        color: 'var(--text-muted)',
+                                        fontWeight: 500,
+                                        fontSize: '0.72rem',
+                                        letterSpacing: '0.07em',
+                                        textTransform: 'uppercase',
+                                        padding: '0 1rem 1rem 0',
+                                    }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-700/50">
+                        <tbody>
                             {filtered.map((t) => (
-                                <tr key={t.transaction_id} className="hover:bg-slate-700/30 transition-colors">
-                                    <td className="py-3 pr-4 text-slate-400">{t.date}</td>
-                                    <td className="py-3 pr-4 text-slate-200 font-medium">{t.merchant}</td>
-                                    <td className={`py-3 pr-4 font-medium ${t.transaction_type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
+                                <tr
+                                    key={t.transaction_id}
+                                    style={{
+                                        borderBottom: '1px solid var(--border)',
+                                        transition: 'background 0.15s',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                        {t.date}
+                                    </td>
+                                    <td style={{ padding: '1rem 1rem 1rem 0', color: 'var(--text-primary)', fontWeight: 500 }}>
+                                        {t.merchant}
+                                    </td>
+                                    <td style={{
+                                        padding: '1rem 1rem 1rem 0', fontWeight: 600, whiteSpace: 'nowrap',
+                                        color: t.transaction_type === 'credit' ? '#10e088' : '#ff4f6a',
+                                    }}>
                                         {t.transaction_type === 'credit' ? '+' : '-'}{formatNPR(t.amount)}
                                     </td>
-                                    <td className="py-3 pr-4">
-                                        <Badge variant={t.transaction_type === 'credit' ? 'success' : 'default'}>
+                                    <td style={{ padding: '1rem 1rem 1rem 0' }}>
+                                        <span style={{
+                                            padding: '0.25rem 0.65rem', borderRadius: 99,
+                                            fontSize: '0.72rem', fontWeight: 500,
+                                            background: t.transaction_type === 'credit' ? '#10e08818' : 'var(--bg-overlay)',
+                                            color: t.transaction_type === 'credit' ? '#10e088' : 'var(--text-muted)',
+                                            border: `1px solid ${t.transaction_type === 'credit' ? '#10e08830' : 'var(--border)'}`,
+                                        }}>
                                             {t.transaction_type}
-                                        </Badge>
+                                        </span>
                                     </td>
-                                    <td className="py-3 pr-4">
+                                    <td style={{ padding: '1rem 1rem 1rem 0' }}>
                                         {editingId === t.transaction_id ? (
                                             <select
                                                 defaultValue={t.category}
                                                 onChange={e => handleCategoryChange(t.transaction_id, e.target.value)}
                                                 onBlur={() => setEditingId(null)}
                                                 autoFocus
-                                                className="bg-slate-600 border border-slate-500 text-slate-200 rounded px-2 py-1 text-xs focus:outline-none"
+                                                style={{
+                                                    background: 'var(--bg-overlay)',
+                                                    border: '1px solid var(--border-strong)',
+                                                    color: 'var(--text-primary)',
+                                                    borderRadius: 8, padding: '0.3rem 0.6rem',
+                                                    fontSize: '0.8rem', outline: 'none',
+                                                }}
                                             >
                                                 {Object.keys(CATEGORIES).map(c => (
                                                     <option key={c} value={c}>{c}</option>
@@ -159,15 +211,20 @@ export default function TransactionsPage() {
                                         ) : (
                                             <button
                                                 onClick={() => setEditingId(t.transaction_id)}
-                                                className="text-blue-400 hover:text-blue-300 text-xs underline underline-offset-2"
+                                                style={{
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    color: '#4f7fff', fontSize: '0.85rem',
+                                                    textDecoration: 'underline', textUnderlineOffset: 3,
+                                                    padding: 0,
+                                                }}
                                             >
                                                 {t.category || 'Uncategorized'}
                                             </button>
                                         )}
                                     </td>
-                                    <td className="py-3">
+                                    <td style={{ padding: '1rem 0' }}>
                                         {t.is_user_corrected && (
-                                            <Check size={14} className="text-green-400" />
+                                            <Check size={15} style={{ color: '#10e088' }} />
                                         )}
                                     </td>
                                 </tr>
