@@ -276,7 +276,7 @@ export default function LoginPage() {
                         fontWeight: 800, fontSize: '0.85rem', color: 'white',
                     }}>E</div>
                     <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1rem', letterSpacing: '-0.01em' }}>
-                        ExpenseAI
+                        XpenseAI
                     </span>
                 </div>
                 <motion.button
