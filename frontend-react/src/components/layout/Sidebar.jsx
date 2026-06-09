@@ -46,7 +46,7 @@ export function Sidebar() {
                         fontSize: '0.9rem', fontWeight: 800, color: 'white',
                     }}>E</div>
                     <div>
-                        <p style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>ExpenseAI</p>
+                        <p style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>XpenseAI</p>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>@{username}</p>
                     </div>
                 </div>
